@@ -1,0 +1,5 @@
+{
+    "program": "shadowfi_amm_volatile.aleo",
+    "version": "0.0.0",
+    "description": "Shadow Finance's private AMM for volatile assets"
+}
