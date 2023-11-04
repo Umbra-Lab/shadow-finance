@@ -1,0 +1,5 @@
+{
+    "program": "shadowfi_amm_stable.aleo",
+    "version": "0.0.0",
+    "description": "Shadow Finance's private AMM for stable assets"
+}
