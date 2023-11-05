@@ -1,6 +1,6 @@
-program shadowfi_token_light_v1_0.aleo {
-    const MAX_MINT_AMOUNT: u64 = 100_000u64;
-    const SUPPLY_CAP: u64 = 100_000_000_000u64;
+program shadowfi_token_light_v1_1.aleo {
+    const MAX_MINT_AMOUNT_LIGHT: u64 = 100_000u64;
+    const SUPPLY_CAP_LIGHT: u64 = 100_000_000_000u64;
 
     mapping supply_light: u8 => u64;
     mapping balances_light: address => u64;
@@ -11,7 +11,7 @@ program shadowfi_token_light_v1_0.aleo {
     }
 
     transition mint_light(owner: address, amount: u64) -> LightToken {
-        assert(amount <= MAX_MINT_AMOUNT);
+        assert(amount <= MAX_MINT_AMOUNT_LIGHT);
 
         return LightToken {
             owner,
@@ -22,7 +22,7 @@ program shadowfi_token_light_v1_0.aleo {
         let total_supply: u64 = Mapping::get_or_use(supply_light, 0u8, 0u64);
         let new_supply: u64 = total_supply + amount;
 
-        assert(new_supply <= SUPPLY_CAP);
+        assert(new_supply <= SUPPLY_CAP_LIGHT);
 
         Mapping::set(supply_light, 0u8, new_supply);
     }

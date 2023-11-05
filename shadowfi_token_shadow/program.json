@@ -1,5 +1,5 @@
 {
-    "program": "shadowfi_token_shadow_v1_0.aleo",
-    "version": "1.0.0",
+    "program": "shadowfi_token_shadow_v1_1.aleo",
+    "version": "1.1.0",
     "description": "Shadow Finance's test token"
 }
