@@ -1,7 +1,7 @@
 import shadowfi_token_zero_v1_1.leo;
 import shadowfi_token_one_v1_1.leo;
 
-program shadowfi_vamm_zeroone_v1_1.aleo {    
+program shadowfi_vamm_zeroone_v1_2.aleo {    
     mapping supply_zeroone: bool => u64;
     mapping reserves_zeroone: bool => u64;
     mapping balances_zeroone: u64 => u64;
@@ -31,7 +31,7 @@ program shadowfi_vamm_zeroone_v1_1.aleo {
         return 0u64;
     }
 
-    transition init_pool_zeroone(owner: address, claim: u64, token0: shadowfi_token_zero_v1_1.leo/ZERO, amount0: u64, token1: shadowfi_token_one_v1_1.leo/ONE, amount1: u64) -> (shadowfi_token_zero_v1_1.leo/ZERO, shadowfi_token_one_v1_1.leo/ONE, ZEROONE) {
+    transition initialize_pool_zeroone(owner: address, claim: u64, token0: shadowfi_token_zero_v1_1.leo/ZERO, amount0: u64, token1: shadowfi_token_one_v1_1.leo/ONE, amount1: u64) -> (shadowfi_token_zero_v1_1.leo/ZERO, shadowfi_token_one_v1_1.leo/ONE, ZEROONE) {
         let remaining0: ZERO = shadowfi_token_zero_v1_1.leo/deposit_zero(token0, amount0);
         let remaining1: ONE = shadowfi_token_one_v1_1.leo/deposit_one(token1, amount1);
 
@@ -44,10 +44,8 @@ program shadowfi_vamm_zeroone_v1_1.aleo {
 
         return (remaining0, remaining1, token) then finalize(claim, amount0, amount1, initial_lp);
     }
-    finalize init_pool_zeroone(owner: u64, token0: u64, token1: u64, initial_lp: u64) {
-        let total_supply: u64 = Mapping::get_or_use(supply_zeroone, true, 0u64);
-
-        assert_eq(total_supply, 0u64);
+    finalize initialize_pool_zeroone(owner: u64, token0: u64, token1: u64, initial_lp: u64) {
+        assert(!Mapping::contains(supply_zeroone, true));
 
         Mapping::set(reserves_zeroone, false, token0);
         Mapping::set(reserves_zeroone, true, token1);
