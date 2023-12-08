@@ -4,7 +4,7 @@ by removing the overhead of importing, hashing, etc.
 Therefore, this version is actually impractical for real use-cases
 and will NOT be used as a part of the real product.
 **/
-program shadowfi_demo_v1_0.aleo {
+program shadowfi_demo_v1_1.aleo {
 /** Temporary ID to identify records **/
     const ID_ZEC: u8 = 1u8;
     const ID_SHFI: u8 = 2u8;
@@ -304,8 +304,14 @@ program shadowfi_demo_v1_0.aleo {
             amount: token1.amount - amount1,
             id: ID_SHFI,
         };
+        let claim: u64 = token.claim;
+        let re_token: ZECSHFI = ZECSHFI {
+            owner,
+            claim,
+            id: ID_ZECSHFI,
+        };
 
-        return (remaining0, remaining1, token) then finalize(token.claim, amount0, amount1);
+        return (remaining0, remaining1, re_token) then finalize(claim, amount0, amount1);
     }
     finalize add_lp_zecshfi(owner: u64, token0: u64, token1: u64) {
         let total_supply: u64 = Mapping::get(supply_zecshfi, true);

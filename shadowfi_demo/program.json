@@ -1,6 +1,6 @@
 {
-    "program": "shadowfi_demo_v1_0.aleo",
-    "version": "1.0.0",
+    "program": "shadowfi_demo_v1_1.aleo",
+    "version": "1.1.0",
     "description": "A demo private automated market maker",
     "license": "MIT"
 }
