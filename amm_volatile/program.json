@@ -1,5 +1,5 @@
 {
-    "program": "shadowfi_vamm_zecshfi_v1_3.aleo",
-    "version": "1.3.0",
+    "program": "shadowfi_vamm_zecshfi_v1_4.aleo",
+    "version": "1.4.0",
     "description": "Shadow Finance's private AMM suited to volatile assets"
 }

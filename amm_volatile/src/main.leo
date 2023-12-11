@@ -1,7 +1,7 @@
 import shadowfi_token_zec_v1_1.leo;
 import shadowfi_token_shfi_v1_1.leo;
 
-program shadowfi_vamm_zecshfi_v1_3.aleo {    
+program shadowfi_vamm_zecshfi_v1_4.aleo {    
     mapping supply_zecshfi: bool => u64;
     mapping reserves_zecshfi: bool => u64;
     mapping balances_zecshfi: u64 => u64;
@@ -126,7 +126,7 @@ program shadowfi_vamm_zecshfi_v1_3.aleo {
         let token0: ZEC = shadowfi_token_zec_v1_1.leo/withdraw_zec(receiver, amount0);
         let token1: SHFI = shadowfi_token_shfi_v1_1.leo/withdraw_shfi(receiver, amount1);
 
-        return then finalize(token.claim, amount0, amount1);
+        return (token0, token1) then finalize(token.claim, amount0, amount1);
     }
     finalize burn_lp_zecshfi(owner: u64, amount0: u64, amount1: u64) {
         let total_supply: u64 = Mapping::get(supply_zecshfi, true);
