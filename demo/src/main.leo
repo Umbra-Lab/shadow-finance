@@ -4,7 +4,7 @@ by removing the overhead of importing, hashing, etc.
 Therefore, this version is actually impractical for real use-cases
 and will NOT be used as a part of the real product.
 **/
-program shadowfi_demo_v1_2.aleo {
+program shadowfi_demo_v2_0.aleo {
 /** Temporary ID to identify records **/
     const ID_ZEC: u8 = 1u8;
     const ID_SHFI: u8 = 2u8;
@@ -46,16 +46,16 @@ program shadowfi_demo_v1_2.aleo {
         id: u8,
     }
 
-    transition mint_zec(owner: address, amount: u64) -> ZEC {
+    async transition mint_zec(owner: address, amount: u64) -> (ZEC, Future) {
         assert(amount <= MAX_MINT_AMOUNT_ZEC);
 
-        return ZEC {
+        return (ZEC {
             owner,
             amount,
             id: ID_ZEC,
-        } then finalize(amount);
+        }, finalize_mint_zec(amount));
     }
-    finalize mint_zec(amount: u64) {
+    async function finalize_mint_zec(amount: u64) {
         let total_supply: u64 = Mapping::get_or_use(supply_zec, true, 0u64);
         let new_supply: u64 = total_supply + amount;
 
@@ -80,10 +80,10 @@ program shadowfi_demo_v1_2.aleo {
         return (remaining, transferred);
     }
 
-    transition transfer_public_zec(receiver: address, amount: u64) {
-        return then finalize(self.caller, receiver, amount);
+    async transition transfer_public_zec(receiver: address, amount: u64) -> Future {
+        return finalize_transfer_public_zec(self.caller, receiver, amount);
     }
-    finalize transfer_public_zec(owner: address, receiver: address, amount: u64) {
+    async function finalize_transfer_public_zec(owner: address, receiver: address, amount: u64) {
         let owner_balance: u64 = Mapping::get(balances_zec, owner);
         Mapping::set(balances_zec, owner, owner_balance - amount);
 
@@ -91,30 +91,30 @@ program shadowfi_demo_v1_2.aleo {
         Mapping::set(balances_zec, receiver, receiver_balance + amount);
     }
 
-    transition deposit_zec(token: ZEC, amount: u64) -> ZEC {
+    async transition deposit_zec(token: ZEC, amount: u64) -> (ZEC, Future) {
         let remaining: ZEC = ZEC {
             owner: token.owner,
             amount: token.amount - amount,
             id: ID_ZEC,
         };
 
-        return remaining then finalize(self.caller, amount);
+        return (remaining, finalize_deposit_zec(self.caller, amount));
     }
-    finalize deposit_zec(owner: address, amount: u64) {
+    async function finalize_deposit_zec(owner: address, amount: u64) {
         let balance: u64 = Mapping::get_or_use(balances_zec, owner, 0u64);
         Mapping::set(balances_zec, owner, balance + amount);
     }
 
-    transition withdraw_zec(receiver: address, amount: u64) -> ZEC {
+    async transition withdraw_zec(receiver: address, amount: u64) -> (ZEC, Future) {
         let token: ZEC = ZEC {
             owner: receiver,
             amount,
             id: ID_ZEC,
         };
 
-        return token then finalize(self.caller, amount);
+        return (token, finalize_withdraw_zec(self.caller, amount));
     }
-    finalize withdraw_zec(owner: address, amount: u64) {
+    async function finalize_withdraw_zec(owner: address, amount: u64) {
         let balance: u64 = Mapping::get(balances_zec, owner);
         Mapping::set(balances_zec, owner, balance - amount);
     }
@@ -133,16 +133,16 @@ program shadowfi_demo_v1_2.aleo {
         id: u8,
     }
 
-    transition mint_shfi(owner: address, amount: u64) -> SHFI {
+    async transition mint_shfi(owner: address, amount: u64) -> (SHFI, Future) {
         assert(amount <= MAX_MINT_AMOUNT_SHFI);
 
-        return SHFI {
+        return (SHFI {
             owner,
             amount,
             id: ID_SHFI,
-        } then finalize(amount);
+        }, finalize_mint_shfi(amount));
     }
-    finalize mint_shfi(amount: u64) {
+    async function finalize_mint_shfi(amount: u64) {
         let total_supply: u64 = Mapping::get_or_use(supply_shfi, true, 0u64);
         let new_supply: u64 = total_supply + amount;
 
@@ -167,10 +167,10 @@ program shadowfi_demo_v1_2.aleo {
         return (remaining, transferred);
     }
 
-    transition transfer_public_shfi(receiver: address, amount: u64) {
-        return then finalize(self.caller, receiver, amount);
+    async transition transfer_public_shfi(receiver: address, amount: u64) -> Future {
+        return finalize_transfer_public_shfi(self.caller, receiver, amount);
     }
-    finalize transfer_public_shfi(owner: address, receiver: address, amount: u64) {
+    async function finalize_transfer_public_shfi(owner: address, receiver: address, amount: u64) {
         let owner_balance: u64 = Mapping::get(balances_shfi, owner);
         Mapping::set(balances_shfi, owner, owner_balance - amount);
 
@@ -178,30 +178,30 @@ program shadowfi_demo_v1_2.aleo {
         Mapping::set(balances_shfi, receiver, receiver_balance + amount);
     }
 
-    transition deposit_shfi(token: SHFI, amount: u64) -> SHFI {
+    async transition deposit_shfi(token: SHFI, amount: u64) -> (SHFI, Future) {
         let remaining: SHFI = SHFI {
             owner: token.owner,
             amount: token.amount - amount,
             id: ID_SHFI,
         };
 
-        return remaining then finalize(self.caller, amount);
+        return (remaining, finalize_deposit_shfi(self.caller, amount));
     }
-    finalize deposit_shfi(owner: address, amount: u64) {
+    async function finalize_deposit_shfi(owner: address, amount: u64) {
         let balance: u64 = Mapping::get_or_use(balances_shfi, owner, 0u64);
         Mapping::set(balances_shfi, owner, balance + amount);
     }
 
-    transition withdraw_shfi(receiver: address, amount: u64) -> SHFI {
+    async transition withdraw_shfi(receiver: address, amount: u64) -> (SHFI, Future) {
         let token: SHFI = SHFI {
             owner: receiver,
             amount,
             id: ID_SHFI,
         };
 
-        return token then finalize(self.caller, amount);
+        return (token, finalize_withdraw_shfi(self.caller, amount));
     }
-    finalize withdraw_shfi(owner: address, amount: u64) {
+    async function finalize_withdraw_shfi(owner: address, amount: u64) {
         let balance: u64 = Mapping::get(balances_shfi, owner);
         Mapping::set(balances_shfi, owner, balance - amount);
     }
@@ -218,7 +218,7 @@ program shadowfi_demo_v1_2.aleo {
         id: u8,
     }
 
-    transition initialize_pool_zecshfi(owner: address, claim: u64, token0: ZEC, amount0: u64, token1: SHFI, amount1: u64) -> (ZEC, SHFI, ZECSHFI) {
+    async transition initialize_pool_zecshfi(owner: address, claim: u64, token0: ZEC, amount0: u64, token1: SHFI, amount1: u64) -> (ZEC, SHFI, ZECSHFI, Future) {
         let remaining0: ZEC = ZEC {
             owner,
             amount: token0.amount - amount0,
@@ -238,9 +238,9 @@ program shadowfi_demo_v1_2.aleo {
 
         let initial_lp: u64 = square_root(amount0 * amount1) - 1000u64;
 
-        return (remaining0, remaining1, token) then finalize(claim, amount0, amount1, initial_lp);
+        return (remaining0, remaining1, token, finalize_initialize_pool_zecshfi(claim, amount0, amount1, initial_lp));
     }
-    finalize initialize_pool_zecshfi(owner: u64, token0: u64, token1: u64, initial_lp: u64) {
+    async function finalize_initialize_pool_zecshfi(owner: u64, token0: u64, token1: u64, initial_lp: u64) {
         assert(!Mapping::contains(supply_zecshfi, true));
 
         Mapping::set(reserves_zecshfi, false, token0);
@@ -251,7 +251,7 @@ program shadowfi_demo_v1_2.aleo {
         Mapping::set(balances_zecshfi, owner, initial_lp);
     }
 
-    transition init_lp_zecshfi(owner: address, claim: u64, token0: ZEC, amount0: u64, token1: SHFI, amount1: u64) -> (ZEC, SHFI, ZECSHFI) {
+    async transition init_lp_zecshfi(owner: address, claim: u64, token0: ZEC, amount0: u64, token1: SHFI, amount1: u64) -> (ZEC, SHFI, ZECSHFI, Future) {
         let remaining0: ZEC = ZEC {
             owner,
             amount: token0.amount - amount0,
@@ -269,9 +269,9 @@ program shadowfi_demo_v1_2.aleo {
             id: ID_ZECSHFI,
         };
 
-        return (remaining0, remaining1, token) then finalize(claim, amount0, amount1);
+        return (remaining0, remaining1, token, finalize_init_lp_zecshfi(claim, amount0, amount1));
     }
-    finalize init_lp_zecshfi(owner: u64, token0: u64, token1: u64) {
+    async function finalize_init_lp_zecshfi(owner: u64, token0: u64, token1: u64) {
         assert(!Mapping::contains(balances_zecshfi, owner));
         let total_supply: u64 = Mapping::get(supply_zecshfi, true);
 
@@ -293,7 +293,7 @@ program shadowfi_demo_v1_2.aleo {
         Mapping::set(balances_zecshfi, owner, lp);
     }
 
-    transition add_lp_zecshfi(owner: address, token: ZECSHFI, token0: ZEC, amount0: u64, token1: SHFI, amount1: u64) -> (ZEC, SHFI, ZECSHFI) {
+    async transition add_lp_zecshfi(owner: address, token: ZECSHFI, token0: ZEC, amount0: u64, token1: SHFI, amount1: u64) -> (ZEC, SHFI, ZECSHFI, Future) {
         let remaining0: ZEC = ZEC {
             owner,
             amount: token0.amount - amount0,
@@ -311,9 +311,9 @@ program shadowfi_demo_v1_2.aleo {
             id: ID_ZECSHFI,
         };
 
-        return (remaining0, remaining1, re_token) then finalize(claim, amount0, amount1);
+        return (remaining0, remaining1, re_token, finalize_add_lp_zecshfi(claim, amount0, amount1));
     }
-    finalize add_lp_zecshfi(owner: u64, token0: u64, token1: u64) {
+    async function finalize_add_lp_zecshfi(owner: u64, token0: u64, token1: u64) {
         let total_supply: u64 = Mapping::get(supply_zecshfi, true);
 
         assert_neq(total_supply, 0u64);
@@ -335,7 +335,7 @@ program shadowfi_demo_v1_2.aleo {
         Mapping::set(balances_zecshfi, owner, current_lp + lp);
     }
 
-    transition burn_lp_zecshfi(owner: address, token: ZECSHFI, amount0: u64, amount1: u64) -> (ZEC, SHFI) {
+    async transition burn_lp_zecshfi(owner: address, token: ZECSHFI, amount0: u64, amount1: u64) -> (ZEC, SHFI, Future) {
         let token0: ZEC = ZEC {
             owner,
             amount: amount0,
@@ -347,9 +347,9 @@ program shadowfi_demo_v1_2.aleo {
             id: ID_SHFI,
         };
 
-        return (token0, token1) then finalize(token.claim, amount0, amount1);
+        return (token0, token1, finalize_burn_lp_zecshfi(token.claim, amount0, amount1));
     }
-    finalize burn_lp_zecshfi(owner: u64, amount0: u64, amount1: u64) {
+    async function finalize_burn_lp_zecshfi(owner: u64, amount0: u64, amount1: u64) {
         let total_supply: u64 = Mapping::get(supply_zecshfi, true);
 
         let lp: u64 = Mapping::get(balances_zecshfi, owner);
@@ -368,7 +368,7 @@ program shadowfi_demo_v1_2.aleo {
         Mapping::remove(balances_zecshfi, owner);
     }
 
-    transition swap_to_0_zecshfi(owner: address, token1In: SHFI, amount1In: u64, amount0Out: u64) -> (ZEC, SHFI) {
+    async transition swap_to_0_zecshfi(owner: address, token1In: SHFI, amount1In: u64, amount0Out: u64) -> (ZEC, SHFI, Future) {
         let token0: ZEC = ZEC {
             owner,
             amount: amount0Out,
@@ -380,9 +380,9 @@ program shadowfi_demo_v1_2.aleo {
             id: ID_SHFI,
         };
 
-        return (token0, token1) then finalize(amount1In, amount0Out);
+        return (token0, token1, finalize_swap_to_0_zecshfi(amount1In, amount0Out));
     }
-    finalize swap_to_0_zecshfi(amount1In: u64, amount0Out: u64) {
+    async function finalize_swap_to_0_zecshfi(amount1In: u64, amount0Out: u64) {
         let reserve0: u64 = Mapping::get(reserves_zecshfi, false);
         let reserve1: u64 = Mapping::get(reserves_zecshfi, true);
 
@@ -395,7 +395,7 @@ program shadowfi_demo_v1_2.aleo {
         Mapping::set(reserves_zecshfi, true, new_reserve1);
     }
 
-    transition swap_to_1_zecshfi(owner: address, token0In: ZEC, amount0In: u64, amount1Out: u64) -> (ZEC, SHFI) {        
+    async transition swap_to_1_zecshfi(owner: address, token0In: ZEC, amount0In: u64, amount1Out: u64) -> (ZEC, SHFI, Future) {        
         let token0: ZEC = ZEC {
             owner,
             amount: token0In.amount - amount0In,
@@ -407,9 +407,9 @@ program shadowfi_demo_v1_2.aleo {
             id: ID_SHFI,
         };
 
-        return (token0, token1) then finalize(amount0In, amount1Out);
+        return (token0, token1, finalize_swap_to_1_zecshfi(amount0In, amount1Out));
     }
-    finalize swap_to_1_zecshfi(amount0In: u64, amount1Out: u64) {
+    async function finalize_swap_to_1_zecshfi(amount0In: u64, amount1Out: u64) {
         let reserve0: u64 = Mapping::get(reserves_zecshfi, false);
         let reserve1: u64 = Mapping::get(reserves_zecshfi, true);
 

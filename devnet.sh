@@ -11,8 +11,13 @@ tmux new-session -d -s "devnet" -n "window0"
 
 for validator_index in $(seq 0 3); do
   log_file="$log_dir/validator-$validator_index.log"
-  tmux new-window -t "devnet:$validator_index" -n "window$validator_index"
-  tmux send-keys -t "devnet:window$validator_index" "snarkos start --private-key $PRIVATE_KEY --dev $validator_index --validator --logfile $log_file" C-m
+  window_index=$((validator_index + index_offset))
+  if [ "$validator_index" -eq 0 ]; then
+    tmux send-keys -t "devnet:window0" "snarkos start --private-key $PRIVATE_KEY --nodisplay --dev $validator_index --allow-external-peers --dev-num-validators 4 --validator --logfile $log_file --metrics" C-m
+  else
+    tmux new-window -t "devnet:$window_index" -n "window$validator_index"
+    tmux send-keys -t "devnet:window$validator_index" "snarkos start --nodisplay --dev $validator_index --allow-external-peers --dev-num-validators 4 --validator --logfile $log_file" C-m
+  fi
 done
 
 tmux attach-session -t "devnet"
