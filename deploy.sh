@@ -8,4 +8,6 @@ source $SCRIPT_DIR/.env
 
 PROGRAM=$(python3 -c "import json; print(json.load(open('build/program.json'))['program'])")
 
-snarkos developer deploy --network 1 -p $PRIVATE_KEY -q $NODE_URL -b $NODE_URL/testnet/transaction/broadcast --priority-fee 0 --path build $PROGRAM
+FEE=73
+snarkos developer deploy --network 1 --private-key $PRIVATE_KEY --priority-fee $FEE --query $NODE_URL --broadcast "$NODE_URL/testnet/transaction/broadcast" --path build $PROGRAM
+# leo deploy -d --network testnet --priority-fee $FEE --private-key $PRIVATE_KEY --endpoint $NODE_URL
