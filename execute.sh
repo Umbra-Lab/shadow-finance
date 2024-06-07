@@ -5,4 +5,4 @@ source $SCRIPT_DIR/.env
 
 PROGRAM=$(python3 -c "import json; print(json.load(open('build/program.json'))['program'])")
 
-snarkos developer execute -p $PRIVATE_KEY -q $TESTNET -b $TESTNET/testnet3/transaction/broadcast --priority-fee 0 $PROGRAM "$@"
+snarkos developer execute --network 1 --private-key $PRIVATE_KEY --query $NODE_URL --broadcast $NODE_URL/testnet/transaction/broadcast $PROGRAM "$@"
